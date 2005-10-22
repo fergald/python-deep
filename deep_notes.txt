@@ -1,0 +1,1 @@
+should I use Type or isinstance for List and Dict
