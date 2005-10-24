@@ -101,11 +101,11 @@ class DeepTest(myunittest.TestCase):
     if c:
       self.failUnless(True, msg)
       if path:
-        self.assertEqual(path, c.render_path(), "path")
+        self.Eq(path, c.render_path(), "path")
       if expected:
-        self.assertEqual(expected, c.render_expected(), "expected")
+        self.Eq(expected, c.render_expected(), "expected")
       if actual:
-        self.assertEqual(actual, c.render_actual(), "actual")
+        self.Eq(actual, c.render_actual(), "actual")
     else:
       self.failUnless(False, msg)
 
