@@ -86,6 +86,10 @@ class Comparison(object):
     t = type(item)
     if t in (str, int):
       return Equal(item)
+    elif t in (list, ):
+      return List(item)
+    elif t in (dict, ):
+      return Dict(item)
     elif t in (type, ):
       return Is(item)
     else:
