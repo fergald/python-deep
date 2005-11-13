@@ -115,7 +115,7 @@ class Comparison(object):
     return last[1].render_value(last[0])
   
   def render_full(self):
-    return "At %s:\nExpected: %s\nActual  : %s" % \
+    return "%s:\nExpected: %s\nActual  : %s" % \
            (self.render_path(), self.render_expected(), self.render_actual())
   def print_full(self):
     print self.render_full()
