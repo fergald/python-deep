@@ -84,7 +84,6 @@ class DeepTest(myunittest.TestCase):
     return "%s (id = %i)" % (item, id(item))
 
   def testEqual(self, i1, i2, name=""):
-    print "testing " + name
     c = compare(i1, i2)
     msg = "%s: %s vs %s should be equal" %(name, i1, i2)
 
@@ -94,7 +93,6 @@ class DeepTest(myunittest.TestCase):
     self.failUnless(not c, msg)
 
   def testNotEqual(self, i1, i2, path="", actual="", expected="", name=""):
-    print "testing " + name
     c = compare(i1, i2)
     msg = "%s: %s vs %s should not be equal" %(name, i1, i2)
 

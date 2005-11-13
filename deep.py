@@ -15,6 +15,9 @@ __all__ = ['compare',
            'Call',
            ]
 
+def debug(msg):
+  pass
+
 def compare(i1, i2):
   comp = Comparison()
   equal = comp.descend(i1, i2)
@@ -50,7 +53,7 @@ class Comparison(object):
     self.stack = []
 
   def descend(self, i1, i2):
-    print "descend(%s, %s)" % (i1, i2)
+    debug("descend(%s, %s)" % (i1, i2))
 
     if i1 is i2:
       return True
@@ -109,7 +112,6 @@ class Comparison(object):
   
   def render_actual(self):
     last = self.last()
-#    print "last = %s" % last
     return last[1].render_value(last[0])
   
   def render_full(self):
