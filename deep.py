@@ -38,7 +38,7 @@ class Comparator(object):
 
 class DeepException(Exception):
   def __init__(self, einfo, comp):
-    Exception.__init__()
+    Exception.__init__(self)
     self.einfo = einfo
     self.comp = comp
 
