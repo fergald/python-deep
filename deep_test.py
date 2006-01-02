@@ -18,6 +18,8 @@ class mess(object):
 
 o = mess()
 o2 = mess()
+noto = mess()
+noto.an_attr2 = 7
 
 class DeepTest(myunittest.TestCase):
   def runTest(self):
@@ -74,8 +76,10 @@ class DeepTest(myunittest.TestCase):
              [N, o.a_func, Call(5, [3], {"c" : 2}), "x(3, c=2)", "6", "5",
               "! call"],
              [E, o, o2, "object"],
+             [N, o, noto, 'x.__dict__["an\\_attr2"]', "2", "7", "! object"],
              ]
 
+    # for t in (tests[-1],):
     for t in tests:
       if t[0]:
         self.testEqual(*t[1:])

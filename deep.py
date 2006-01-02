@@ -13,6 +13,7 @@ __all__ = ['compare',
            'Attr',
            'Attrs',
            'Call',
+           'Object',
            ]
 
 def debug(msg):
@@ -88,6 +89,8 @@ class Comparison(object):
 
   def wrap(self, item):
     t = type(item)
+
+    #import pdb;pdb.set_trace()
     if t in (str, int):
       return Equal(item)
     elif t in (list, ):
@@ -97,7 +100,7 @@ class Comparison(object):
     elif t in (type, ):
       return Is(item)
     else:
-      raise "can't handle type %s yet" % t
+      return Object(item)
 
   def render_path(self):
     path = "x"
@@ -262,6 +265,15 @@ class Dict(ValueComparator):
         return False
 
     return True
+
+class Object(ValueComparator):
+  def equals(self, item, comp):
+    v = self.value
+
+    return comp.descend(item, InstanceOf(v.__class__)) and \
+           comp.descend(item, Attr("__dict__", v.__dict__))
+
+
 
 class Attr(TransformComparator):
   def __init__(self, attr, value):
