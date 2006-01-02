@@ -38,6 +38,7 @@ class Comparator(object):
 
 class DeepException(Exception):
   def __init__(self, einfo, comp):
+    Exception.__init__()
     self.einfo = einfo
     self.comp = comp
 
@@ -77,7 +78,7 @@ class Comparison(object):
           cache[key] = equals
       except DeepException:
         raise
-      except Exception, e:
+      except Exception:
         raise DeepException(sys.exc_info(), self)
 
       if equals:

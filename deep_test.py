@@ -17,6 +17,7 @@ class mess(object):
     return a + b + c
 
 o = mess()
+o2 = mess()
 
 class DeepTest(myunittest.TestCase):
   def runTest(self):
@@ -72,6 +73,7 @@ class DeepTest(myunittest.TestCase):
              [E, o.a_func, Call(6, [3], {"c" : 2}), "call"],
              [N, o.a_func, Call(5, [3], {"c" : 2}), "x(3, c=2)", "6", "5",
               "! call"],
+             [E, o, o2, "object"],
              ]
 
     for t in tests:
