@@ -153,7 +153,7 @@ class DebugComparison(Comparison):
 
   def wrap(self, item):
     wrapped = super(DebugComparison, self).wrap(item)
-    self.debug("%s wrapped as %s" % (item, wrapped))
+    self.debug("%s wrapped as %s" % (`item`, `wrapped`))
     return wrapped
 
 class ValueComparator(Comparator):
@@ -164,7 +164,7 @@ class ValueComparator(Comparator):
     return self.render_value(self.value)
 
   def __repr__(self):
-    return "%s(%s)" % (self.__class__.__name__, self.value)
+    return "%s(%s)" % (self.__class__.__name__, `self.value`)
 
 class TransformComparator(ValueComparator):
   def equals(self, item, comp):
@@ -173,6 +173,13 @@ class TransformComparator(ValueComparator):
 
   def transform(self, item):
     pass
+
+  def trans_args(self):
+    return ""
+
+  def __repr__(self):
+    # import pdb;pdb.set_trace()
+    return "%s(%s)==%s" %(self.__class__.__name__, self.trans_args(), `self.value`)
 
 class Equal(ValueComparator):
   def equals(self, item, comp):
@@ -216,8 +223,8 @@ class IndexedElem(TransformComparator):
   def expr(self, expr):
     return "%s[%s]" % (expr, self.render_value(self.index))
 
-  def __repr__(self):
-    return "%s([%s] == %s)" % (self.__class__.__name__, self.index, self.value)
+  def trans_args(self):
+    return "%s" % `self.index`
 
 class Len(TransformComparator):
   def transform(self, item):
@@ -328,6 +335,9 @@ class HasAttr(TransformComparator):
   def expr(self, expr):
     return "hasattr(%s, %s)" % (expr, `self.attr`)
 
+  def trans_args(self):
+    return `self.attr`
+
 class CmpAttr(TransformComparator):
   def __init__(self, attr, value):
     self.attr = attr
@@ -338,6 +348,9 @@ class CmpAttr(TransformComparator):
 
   def expr(self, expr):
     return "%s.%s" % (expr, self.attr)
+
+  def trans_args(self):
+    return `self.attr`
 
 class Attr(Comparator):
   def __init__(self, attr, value):
