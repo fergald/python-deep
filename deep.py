@@ -44,6 +44,9 @@ class Comparator(object):
   def expr(self, expr):
     return expr
 
+  def render_debug(self):
+    return str(self)
+
 class DeepException(Exception):
   def __init__(self, einfo, comp):
     Exception.__init__(self)
@@ -141,7 +144,10 @@ class DebugComparison(Comparison):
     print "%s%s" % ("  " * self.depth, msg)
 
   def descend(self, i1, i2):
-    self.debug("descend(%s, %s)" % (i1, i2))
+    i2_str = str(i2)
+    if isinstance(i2, Comparator):
+      i2_str = i2.render_debug()
+    self.debug("descend(%s, %s)" % (i1, i2_str))
     self.depth += 1
     res = super(DebugComparison, self).descend(i1, i2)
     self.depth -= 1
@@ -154,6 +160,9 @@ class ValueComparator(Comparator):
 
   def render(self):
     return self.render_value(self.value)
+
+  def render_debug(self):
+    return "%s(%s)" % (self.__class__.__name__, self.value)
 
 class TransformComparator(ValueComparator):
   def equals(self, item, comp):
@@ -204,6 +213,9 @@ class IndexedElem(TransformComparator):
 
   def expr(self, expr):
     return "%s[%s]" % (expr, self.render_value(self.index))
+
+  def render_debug(self):
+    return "%s([%s] == %s)" % (self.__class__.__name__, self.index, self.value)
 
 class Len(TransformComparator):
   def transform(self, item):
@@ -296,8 +308,6 @@ class Object(ValueComparator):
 
     return comp.descend(item, InstanceOf(v.__class__)) and \
            comp.descend(item, Attr("__dict__", v.__dict__))
-
-
 
 class Attr(TransformComparator):
   def __init__(self, attr, value):
