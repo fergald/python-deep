@@ -148,6 +148,11 @@ class DebugComparison(Comparison):
     self.debug(res)
     return res
 
+  def wrap(self, item):
+    wrapped = super(DebugComparison, self).wrap(item)
+    self.debug("%s wrapped as %s" % (item, wrapped))
+    return wrapped
+
 class ValueComparator(Comparator):
   def __init__(self, value):
     self.value = value
