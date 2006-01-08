@@ -7,9 +7,11 @@ __all__ = ['compare',
            'InstanceOf',
            'IndexedElem',
            'List',
+           'Tuple',
            'EqSet',
            'HasKeys',
            'Dict',
+           'HasAttr',
            'Attr',
            'Attrs',
            'Call',
@@ -98,11 +100,12 @@ class Comparison(object):
   def wrap(self, item):
     t = type(item)
 
-    #import pdb;pdb.set_trace()
-    if t in (str, int):
+    if t in (str, int, bool):
       return Equal(item)
     elif t in (list, ):
       return List(item)
+    elif t in (tuple, ):
+      return Tuple(item)
     elif t in (dict, ):
       return Dict(item)
     elif t in (type, ):
@@ -223,11 +226,11 @@ class Len(TransformComparator):
   def expr(self, expr):
     return "len(%s)" % expr
 
-class List(ValueComparator):
+class Listish(ValueComparator):
   def equals(self, item, comp):
     v = self.value
 
-    for c in (InstanceOf(list), Len(len(v))):
+    for c in (InstanceOf(self.mytype), Len(len(v))):
       if not comp.descend(item, c):
         return False
 
@@ -236,6 +239,12 @@ class List(ValueComparator):
         return False
 
     return True
+
+class List(Listish):
+  mytype = list
+
+class Tuple(Listish):
+  mytype = tuple
 
 class EqSet(ValueComparator):
   def equals(self, item, comp):
@@ -308,7 +317,18 @@ class Object(ValueComparator):
     return comp.descend(item, InstanceOf(v.__class__)) and \
            comp.descend(item, Attr("__dict__", v.__dict__))
 
-class Attr(TransformComparator):
+class HasAttr(TransformComparator):
+  def __init__(self, attr, value=True):
+    self.attr = attr
+    self.value = value
+
+  def transform(self, item):
+    return hasattr(item, self.attr)
+
+  def expr(self, expr):
+    return "hasattr(%s, %s)" % (expr, `self.attr`)
+
+class CmpAttr(TransformComparator):
   def __init__(self, attr, value):
     self.attr = attr
     self.value = value
@@ -318,6 +338,15 @@ class Attr(TransformComparator):
 
   def expr(self, expr):
     return "%s.%s" % (expr, self.attr)
+
+class Attr(Comparator):
+  def __init__(self, attr, value):
+    self.hasattr = HasAttr(attr)
+    self.cmpattr = CmpAttr(attr, value)
+
+  def equals(self, item, comp):
+    return comp.descend(item, self.hasattr) and \
+           comp.descend(item, self.cmpattr)
 
 class Attrs(ValueComparator):
   def equals(self, item, comp):
