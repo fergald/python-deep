@@ -16,12 +16,19 @@ __all__ = ['compare',
            'Object',
            ]
 
-def debug(msg):
-  pass
+DEBUG = 0
 
-def compare(i1, i2):
-  comp = Comparison()
+class Unspec: pass
+
+def compare(i1, i2, debug=Unspec):
+  if debug is Unspec:
+    debug = DEBUG
+  if debug:
+    comp = DebugComparison()
+  else:
+    comp = Comparison()
   equal = comp.descend(i1, i2)
+
   if equal:
     return None
   else:
@@ -54,9 +61,10 @@ class Comparison(object):
     self.cache = {}
     self.stack = []
 
-  def descend(self, i1, i2):
-    debug("descend(%s, %s)" % (i1, i2))
+  def debug(self, msg):
+    pass
 
+  def descend(self, i1, i2):
     if i1 is i2:
       return True
 
@@ -123,6 +131,22 @@ class Comparison(object):
            (self.render_path(), self.render_expected(), self.render_actual())
   def print_full(self):
     print self.render_full()
+
+class DebugComparison(Comparison):
+  def __init__(self):
+    self.depth = 0
+    Comparison.__init__(self)
+
+  def debug(self, msg):
+    print "%s%s" % ("  " * self.depth, msg)
+
+  def descend(self, i1, i2):
+    self.debug("descend(%s, %s)" % (i1, i2))
+    self.depth += 1
+    res = super(DebugComparison, self).descend(i1, i2)
+    self.depth -= 1
+    self.debug(res)
+    return res
 
 class ValueComparator(Comparator):
   def __init__(self, value):
