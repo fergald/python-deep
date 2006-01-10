@@ -361,6 +361,9 @@ class Attr(Comparator):
     return comp.descend(item, self.hasattr) and \
            comp.descend(item, self.cmpattr)
 
+def QAttrs(**qargs):
+  return Attrs(qargs)
+
 class Attrs(ValueComparator):
   def equals(self, item, comp):
     v = self.value
