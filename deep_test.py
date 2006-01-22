@@ -126,6 +126,9 @@ class DeepTest(myunittest.TestCase):
                "! call"),
              E(o, o2, "object"),
              N(o, noto, 'x.__dict__["an\\_attr2"]', "2", "7", "! object"),
+             E(o, And(Attr("an_attr", 1), Attr("an_attr2", 2)), "and"),
+             N(o, And(Attr("an_attr", 0), Attr("an_attr2", 2)), 'x.an_attr', "1", "0", "! and 1"),
+             N(o, And(Attr("an_attr", 1), Attr("an_attr2", 3)), 'x.an_attr2', "2", "3", "! and 2"),
              ]
 
     # for t in (tests[-1],):

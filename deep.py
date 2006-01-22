@@ -16,6 +16,7 @@ __all__ = ['compare',
            'Attrs',
            'Call',
            'Object',
+           'And',
            ]
 
 DEBUG = 0
@@ -397,4 +398,25 @@ class Call(TransformComparator):
       args.append(", ".join(kwargs_a))
 
     return "%s(%s)" % (expr, ", ".join(args))
+
+class AndA(Comparator):
+  def __init__(self, conds):
+    self.conds = conds
+
+  def equals(self, item, comp):
+    for cond in self.conds:
+      if not comp.descend(item, cond):
+        return False
+
+    return True
+    
+  def render(self):
+    return self.render_value(self.value)
+
+  def __repr__(self):
+    return "%s(%s)" % (self.__class__.__name__, `self.conds`)
+
+class And(AndA):
+  def __init__(self, *conds):
+    AndA.__init__(self, conds)
 
