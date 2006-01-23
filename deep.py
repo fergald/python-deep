@@ -101,7 +101,7 @@ class Comparison(object):
   def wrap(self, item):
     t = type(item)
 
-    if t in (str, int, bool):
+    if t in (str, int, bool, float):
       return Equal(item)
     elif t in (list, ):
       return List(item)
