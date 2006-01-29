@@ -129,6 +129,7 @@ class DeepTest(myunittest.TestCase):
              E(o, And(Attr("an_attr", 1), Attr("an_attr2", 2)), "and"),
              N(o, And(Attr("an_attr", 0), Attr("an_attr2", 2)), 'x.an_attr', "1", "0", "! and 1"),
              N(o, And(Attr("an_attr", 1), Attr("an_attr2", 3)), 'x.an_attr2', "2", "3", "! and 2"),
+             E([1, 2], [Ignore(), 2], "ignore"),
              ]
 
     # for t in (tests[-1],):

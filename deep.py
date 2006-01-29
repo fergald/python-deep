@@ -17,6 +17,7 @@ __all__ = ['compare',
            'Call',
            'Object',
            'And',
+           'Ignore',
            ]
 
 DEBUG = 0
@@ -416,3 +417,10 @@ class AndA(Comparator):
 class And(AndA):
   def __init__(self, *conds):
     AndA.__init__(self, conds)
+
+class Ignore(Comparator):
+  def equals(self, item, comp):
+    return True
+    
+  def __repr__(self):
+    return "Ignore"
