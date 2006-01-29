@@ -39,10 +39,7 @@ def compare(i1, i2, debug=Unspec):
 
 class Comparator(object):
   def render_value(self, value):
-    if type(value) is str:
-      return '"%s"' % re.escape(value)
-    else:
-      return str(value)
+    return `value`
 
   def expr(self, expr):
     return expr
@@ -419,4 +416,3 @@ class AndA(Comparator):
 class And(AndA):
   def __init__(self, *conds):
     AndA.__init__(self, conds)
-
