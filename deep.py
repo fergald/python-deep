@@ -360,10 +360,18 @@ class Attr(Comparator):
     return comp.descend(item, self.hasattr) and \
            comp.descend(item, self.cmpattr)
 
-def QAttrs(**qargs):
-  return Attrs(qargs)
-
 class Attrs(ValueComparator):
+  def __init__(self, *args, **qargs):
+    if args:
+      if qargs:
+        raise TypeError("__init__() takes a dict, a tuple or keyword args (args and kwargs given)")
+      if len(args) > 1:
+        raise TypeError("__init__() takes a dict, a tuple or keyword args (2 args given)")
+      value = args[0]
+    else:
+      value = qargs
+    ValueComparator.__init__(self, value)
+
   def equals(self, item, comp):
     v = self.value
     if isinstance(v, dict):
