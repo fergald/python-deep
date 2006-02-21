@@ -46,8 +46,11 @@ class Comparator(object):
     return expr
 
 class DeepException(Exception):
-  def __init__(self, einfo, comp):
+  def __init__(self, comp, einfo=None):
     Exception.__init__(self)
+    if not einfo:
+      einfo = sys.exc_info()
+
     self.einfo = einfo
     self.comp = comp
 
@@ -89,7 +92,7 @@ class Comparison(object):
       except DeepException:
         raise
       except Exception:
-        raise DeepException(sys.exc_info(), self)
+        raise DeepException(self)
 
       if equals:
         stack.pop()
