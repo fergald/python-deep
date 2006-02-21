@@ -15,7 +15,6 @@
 # along with deep.py; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-import myunittest
 import unittest
 
 from deep import *
@@ -68,18 +67,18 @@ class TestNotEqual(object):
     if c:
       case.failUnless(True, msg)
       if self.path:
-        case.Eq(self.path, c.render_path(), "path")
+        case.assertEquals(self.path, c.render_path(), "path")
       if self.expected:
-        case.Eq(self.expected, c.render_expected(), "expected")
+        case.assertEquals(self.expected, c.render_expected(), "expected")
       if self.actual:
-        case.Eq(self.actual, c.render_actual(), "actual")
+        case.assertEquals(self.actual, c.render_actual(), "actual")
     else:
       case.failUnless(False, msg)
 
 E = TestEqual
 N = TestNotEqual
 
-class DeepTest(myunittest.TestCase):
+class DeepTest(unittest.TestCase):
   def runTest(self):
     tests = [E(1, 1, "1 == 1"),
              N(1, 2, "x", "1", "2", "1 != 2"),
@@ -90,7 +89,7 @@ class DeepTest(myunittest.TestCase):
              E(1, Type(int), "1 Type int"),
              N([], Type(int), "type(x)", self.str_id(list), self.str_id(int),
                "[] ! Type int"),
-             E(self, InstanceOf(myunittest.TestCase), "self InstanceOf test"),
+             E(self, InstanceOf(unittest.TestCase), "self InstanceOf test"),
              N([], InstanceOf(int), "x",
                "instance of <type 'list'>",
                "instance of <type 'int'>",
@@ -157,7 +156,7 @@ class DeepTest(myunittest.TestCase):
   def str_id(self, item):
     return "%s (id = %i)" % (item, id(item))
 
-class DeepExc(myunittest.TestCase):
+class DeepExc(unittest.TestCase):
   def runTest(self):
     ex = None
     try:
