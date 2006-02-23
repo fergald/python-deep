@@ -67,11 +67,11 @@ class TestNotEqual(object):
     if c:
       case.failUnless(True, msg)
       if self.path:
-        case.assertEquals(self.path, c.render_path(), "path")
+        case.assertEquals(self.path, c.render_path())
       if self.expected:
-        case.assertEquals(self.expected, c.render_expected(), "expected")
+        case.assertEquals(self.expected, c.render_expected())
       if self.actual:
-        case.assertEquals(self.actual, c.render_actual(), "actual")
+        case.assertEquals(self.actual, c.render_actual())
     else:
       case.failUnless(False, msg)
 
