@@ -35,6 +35,7 @@ __all__ = ['compare',
            'Object',
            'And',
            'Ignore',
+           'Re',
            ]
 
 DEBUG = 0
@@ -452,3 +453,27 @@ class Ignore(Comparator):
     
   def __repr__(self):
     return "Ignore"
+
+class Re(Comparator):
+  def __init__(self, regex, flags=0):
+    if type(regex) is str:
+      self.orig = "%s (flags=%d)" % (`regex`, flags)
+      regex = re.compile(regex, flags)
+    else:
+      self.orig = `regex`
+    self.regex = regex
+
+  def equals(self, item, comp):
+    if self.regex.search(item):
+      return True
+    else:
+      return False
+
+#  def render(self):
+#    return "this"
+  def render(self):
+    return "something matching %s" % self.orig
+
+  def __repr__(self):
+    return "%s(%s)" % (self.__class__.__name__, self.orig)
+

@@ -147,6 +147,8 @@ class DeepTest(unittest.TestCase):
              N(o, And(Attr("an_attr", 0), Attr("an_attr2", 2)), 'x.an_attr', "1", "0", "! and 1"),
              N(o, And(Attr("an_attr", 1), Attr("an_attr2", 3)), 'x.an_attr2', "2", "3", "! and 2"),
              E([1, 2], [Ignore(), 2], "ignore"),
+             E("feRgal", Re("rga", re.IGNORECASE), "Re"),
+             N("feRgal", Re("rga"), "x", `"feRgal"`, "something matching 'rga' (flags=0)", "Re"),
              ]
 
     # for t in (tests[-1],):
