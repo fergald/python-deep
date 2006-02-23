@@ -458,7 +458,9 @@ class Ignore(Comparator):
 class Re(Comparator):
   def __init__(self, regex, flags=0):
     if type(regex) is str:
-      self.orig = "%s (flags=%d)" % (`regex`, flags)
+      self.orig = "%s" % `regex`
+      if flags:
+        self.orig += " (flags=%d)" % flags
       regex = re.compile(regex, flags)
     else:
       self.orig = `regex`
