@@ -149,6 +149,10 @@ class DeepTest(unittest.TestCase):
              E([1, 2], [Ignore(), 2], "ignore"),
              E("feRgal", Re("rga", re.IGNORECASE), "Re"),
              N("feRgal", Re("rga"), "x", `"feRgal"`, "something matching 'rga' (flags=0)", "Re"),
+             E(["abc", "ab", "a"], Elements(Re("a")), "Elements all"),
+             N(["abc", "ab", "a"], Elements(Re("b")), "x[2]", "a".__repr__(), "something matching 'b' (flags=0)", "Elements all"),
+             E(["abc", "ab", "a"], Elements(Re("b"), (0, 1)), "Elements some"),
+             N(["a", "c", "abc"], Elements(Re("b"), (1, 2)), "x[1]", "c".__repr__(), "something matching 'b' (flags=0)", "Elements some"),
              ]
 
     # for t in (tests[-1],):

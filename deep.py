@@ -36,6 +36,7 @@ __all__ = ['compare',
            'And',
            'Ignore',
            'Re',
+           'Elements',
            ]
 
 DEBUG = 0
@@ -475,3 +476,26 @@ class Re(Comparator):
   def __repr__(self):
     return "%s(%s)" % (self.__class__.__name__, self.orig)
 
+class Elements(Comparator):
+  def __init__(self, value, indices=None):
+    self.value = value
+    self.indices = indices
+    
+  def equals(self, item, comp):
+    value = self.value
+    indices = self.indices
+
+    if not indices:
+      indices = xrange(0, len(item))
+
+    for i in indices:
+      if not comp.descend(item, IndexedElem(i, value)):
+        return False
+
+    return True
+    
+  def render(self):
+    return self.render_value(self.value)
+
+  def __repr__(self):
+    return "%s(%s)" % (self.__class__.__name__, `self.value`)
