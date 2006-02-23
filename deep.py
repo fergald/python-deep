@@ -469,8 +469,6 @@ class Re(Comparator):
     else:
       return False
 
-#  def render(self):
-#    return "this"
   def render(self):
     return "something matching %s" % self.orig
 
