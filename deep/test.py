@@ -25,8 +25,7 @@ class TestCaseMix(object):
   def DeepEq(self, first, second, msg=""):
     res = deep.compare(first, second)
     if res:
-      msg = "%s:\nExpected: %s\nActual  : %s" % (msg, second, first)
-      msg += "\nDiffered at " + res.render_full()
+      msg = "\nDiffered at " + res.render_full()
       
     self.failUnless(not res, msg)
 
