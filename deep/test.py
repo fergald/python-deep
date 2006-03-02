@@ -25,7 +25,7 @@ class TestCaseMix(object):
   def DeepEq(self, first, second, msg=""):
     res = deep.compare(first, second)
     if msg:
-      msg = "%s:\n" % msg, second, first)
+      msg = "%s:\n" % msg
     else:
       msg = ""
     if res:
