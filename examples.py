@@ -9,9 +9,9 @@ examples = [("a failing regex", "feRgal", deep.Re("rga")),
 
 for e in examples:
   (desc, obj, comp) = e
-  c = deep.compare(obj, comp)
+  d = deep.diff(obj, comp)
   print "###################"
   print desc
   print "###################"
-  print c.render_full()
+  print d.render_full()
   print
