@@ -17,7 +17,7 @@
 
 import re, sys, traceback
 
-__all__ = ['compare',
+__all__ = ['diff',
            'Equal',
            'Is',
            'Type',
@@ -43,7 +43,7 @@ DEBUG = 0
 
 class Unspec: pass
 
-def compare(i1, i2, debug=Unspec):
+def diff(i1, i2, debug=Unspec):
   if debug is Unspec:
     debug = DEBUG
   if debug:

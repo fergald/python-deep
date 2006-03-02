@@ -43,13 +43,13 @@ class TestEqual(object):
     self.name = name
 
   def test(self, case):
-    c = compare(self.i1, self.i2)
+    d = diff(self.i1, self.i2)
     msg = "%s: %s vs %s should be equal" %(self.name, self.i1, self.i2)
 
-    if c:
-      msg += "\n" + c.render_full()
+    if d:
+      msg += "\n" + d.render_full()
 
-    case.failUnless(not c, msg)
+    case.failUnless(not d, msg)
 
 class TestNotEqual(object):
   def __init__(self, i1, i2, path="", actual="", expected="", name=""):
@@ -61,7 +61,7 @@ class TestNotEqual(object):
     self.name = name
 
   def test(self, case):
-    c = compare(self.i1, self.i2)
+    c = diff(self.i1, self.i2)
     msg = "%s: %s vs %s should not be equal" %(self.name, self.i1, self.i2)
 
     if c:
@@ -82,8 +82,8 @@ class DeepTest(unittest.TestCase):
   def runTest(self):
     tests = [E(1, 1, "1 == 1"),
              N(1, 2, "x", "1", "2", "1 != 2"),
-             E((1,2), (1,2), "tuple compare"),
-             N((1,3), (1,2), "x[1]", "3", "2", "tuple compare"),
+             E((1,2), (1,2), "tuple diff"),
+             N((1,3), (1,2), "x[1]", "3", "2", "tuple diff"),
              E(1, Is(1), "1 Is 1"),
              N(2, Is(1), "x", self.str_id(2), self.str_id(1), "2 ! Is 1"),
              E(1, Type(int), "1 Type int"),
@@ -166,7 +166,7 @@ class DeepExc(unittest.TestCase):
   def runTest(self):
     ex = None
     try:
-      compare([0, 1], IndexedElem(2, None))
+      diff([0, 1], IndexedElem(2, None))
     except Exception, e:
       ex = e
 
