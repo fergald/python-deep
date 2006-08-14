@@ -23,15 +23,12 @@ main = unittest.main
 class TestCaseMix(object):
   """ A mixin class for use with python's unittest framework """
   def DeepEq(self, first, second, msg=""):
-    diff = deep.diff(first, second)
-    if msg:
-      msg = "%s:\n" % msg
-    else:
-      msg = ""
-    if diff:
-      msg += "\nDiffered at " + diff.render_full()
-      
-    self.failUnless(not diff, msg)
+    res = deep.diff(first, second)
+    if res:
+      msg = "%s:\nExpected: %s\nActual  : %s" % (msg, second, first)
+      msg += "\nDiffered at " + res.render_full()
+
+    self.failUnless(not res, msg)
 
 class TestCase(unittest.TestCase, TestCaseMix):
   """ A premixed TestCase class """
