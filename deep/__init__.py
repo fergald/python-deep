@@ -58,6 +58,7 @@ def diff(i1, i2, debug=Unspec):
     return comp
 
 class Comparator(object):
+  """ Base class for all Comparator objects """
   def render_value(self, value):
     return `value`
 
@@ -65,6 +66,8 @@ class Comparator(object):
     return expr
 
 class DeepException(Exception):
+  """ Exception class, shouldn't ever be used but keeps a stack trace
+  to make debugging easier """
   def __init__(self, comp, einfo=None):
     Exception.__init__(self)
     if not einfo:
@@ -80,6 +83,7 @@ class DeepException(Exception):
       )
 
 class Comparison(object):
+  """ This object holds all the state of a single comparison """
   def __init__(self):
     self.cache = {}
     self.stack = []
@@ -88,13 +92,37 @@ class Comparison(object):
     pass
 
   def descend(self, i1, i2):
+    """
+      Parameters:
+        i1 : any item of data
+        i2 : an item to compare with i1, this may be some plain data or
+          an object derived from deep.Comparator
+      Returns: A true or false value
+
+      Operation:
+        1 Return true if i1 and i2 are the same object (using id()).
+        2 If we have compared i1 and i2 before we return the value we
+          returned previously, from a cache.
+        3 If i2 is not already derived from deep.Comparator, wrap it in an
+          appropriate comarator object and call that i2.
+        4 Ask the comparator i2 if it considers i1 to be equal.
+
+      Circular structures are handled by stage 2 above and the fact that
+      when we encounter a previously unseen pair (i1, i2) we set their cached
+      result to true. This is effectively "assume i1 == i2 unless we can prove
+      otherwise". Eventually we will come back out of the circular structure
+      and if we couldn't find an differences then it really was true.
+    """
+
     if i1 is i2:
       return True
 
     if not isinstance(i2, Comparator):
       i2 = self.wrap(i2)
-    
-    key = (id(i1), i2) # Comparators are not hashable
+
+    # We don't know whether i1 will be hashable so take it's id
+    # Comparators are not hashable so this will be just id()
+    key = (id(i1), i2) 
     cache = self.cache
     if cache.has_key(key):
       equals = cache[key]
@@ -119,8 +147,12 @@ class Comparison(object):
     return equals
 
   def wrap(self, item):
+    """ Take a python object and return a deep.Comparator object that
+    will make the "right" type of comparison """
     t = type(item)
 
+    # do I cover all the builtin types here?
+    # missing Class
     if t in (str, int, bool, float):
       return Equal(item)
     elif t in (list, ):
@@ -135,6 +167,10 @@ class Comparison(object):
       return Object(item)
 
   def render_path(self):
+    """
+    Returns:
+      a string which represents the stack
+    """
     path = "x"
     for (i1, i2) in self.stack:
       path = i2.expr(path)
@@ -143,20 +179,37 @@ class Comparison(object):
 
   def last(self):
     return self.stack[-1]
+
   def render_expected(self):
+    """
+    Returns:
+      The value the last comparator was expecting
+    """
     return self.last()[1].render()
   
   def render_actual(self):
+    """
+    Returns:
+      The value the last comparator actually got
+    """
     last = self.last()
     return last[1].render_value(last[0])
   
   def render_full(self):
+    """
+    Returns:
+      A "pretty" string including the path, the expected and the actual value
+      of the last comparator
+    """
     return "%s:\nExpected: %s\nActual  : %s" % \
            (self.render_path(), self.render_expected(), self.render_actual())
+
   def print_full(self):
     print self.render_full()
 
 class DebugComparison(Comparison):
+  """ This class is useful if you are debugging a comparison and would like
+  output on the progress that is being made at each step. """
   def __init__(self):
     self.depth = 0
     Comparison.__init__(self)
@@ -178,6 +231,8 @@ class DebugComparison(Comparison):
     return wrapped
 
 class ValueComparator(Comparator):
+  """ A base class for comparators that perform a simple comparison
+  against a value. """
   def __init__(self, value):
     self.value = value
 
@@ -188,11 +243,14 @@ class ValueComparator(Comparator):
     return "%s(%s)" % (self.__class__.__name__, `self.value`)
 
 class TransformComparator(ValueComparator):
+  """ A base class for comparators that transform their inout and then
+  perform a simple comparison against a value. """
   def equals(self, item, comp):
     trans = self.transform(item)
     return comp.descend(trans, self.value)
 
   def transform(self, item):
+    """ Override this method with the transformation that should be applied """
     pass
 
   def trans_args(self):
@@ -203,10 +261,12 @@ class TransformComparator(ValueComparator):
     return "%s(%s)==%s" %(self.__class__.__name__, self.trans_args(), `self.value`)
 
 class Equal(ValueComparator):
+  """ Compares using python's == """
   def equals(self, item, comp):
     return self.value == item
 
 class Is(ValueComparator):
+  """ Compares using python's is """
   def equals(self, item, comp):
     return self.value is item
 
@@ -214,6 +274,7 @@ class Is(ValueComparator):
     return "%s (id = %i)" % (super(Is, self).render_value(value), id(value))
 
 class Type(TransformComparator):
+  """ Takes type(item) and then compares """
   def transform(self, item):
     return type(item)
 
@@ -221,6 +282,7 @@ class Type(TransformComparator):
     return "type(%s)" % expr
   
 class InstanceOf(ValueComparator):
+  """ Compares using python's isinstance() """
   def equals(self, item, comp):
     return isinstance(item, self.value)
 
@@ -234,6 +296,7 @@ class DoesNotExist(object):
   pass
 
 class IndexedElem(TransformComparator):
+  """ Compares against item[some index] """
   def __init__(self, index, value):
     self.index = index
     self.value = value
@@ -248,6 +311,7 @@ class IndexedElem(TransformComparator):
     return "%s" % `self.index`
 
 class Len(TransformComparator):
+  """ Compares against len(item) """
   def transform(self, item):
     return len(item)
 
@@ -255,6 +319,7 @@ class Len(TransformComparator):
     return "len(%s)" % expr
 
 class Listish(ValueComparator):
+  """ Base class for comparing against specific collections """
   def equals(self, item, comp):
     v = self.value
 
@@ -269,12 +334,15 @@ class Listish(ValueComparator):
     return True
 
 class List(Listish):
+  """ Compare as a list, element by element """
   mytype = list
 
 class Tuple(Listish):
+  """ Compare as a tuple, element by element """
   mytype = tuple
 
 class EqSet(ValueComparator):
+  """ Compare as a set (not as a bag!) """
   def equals(self, item, comp):
     matched = []
     missing = []
@@ -314,6 +382,7 @@ class EqSet(ValueComparator):
     return "%s as a set (==)" % expr
 
 class HasKeys(TransformComparator):
+  """ Compare item.keys() """
   def __init__(self, value):
     self.value = EqSet(value)
 
@@ -322,9 +391,9 @@ class HasKeys(TransformComparator):
 
   def expr(self, expr):
     return "%s.keys()" % expr
-
       
 class Dict(ValueComparator):
+  """ Compare items against a dict """
   def equals(self, item, comp):
     v = self.value
 
@@ -339,6 +408,8 @@ class Dict(ValueComparator):
     return True
 
 class Object(ValueComparator):
+  """ Compare to another object. Check that the types match and that the
+  attribute dictionaries match """
   def equals(self, item, comp):
     v = self.value
 
@@ -346,6 +417,7 @@ class Object(ValueComparator):
            comp.descend(item, Attr("__dict__", v.__dict__))
 
 class HasAttr(TransformComparator):
+  """ Check that item has a given attribute """
   def __init__(self, attr, value=True):
     self.attr = attr
     self.value = value
@@ -360,6 +432,7 @@ class HasAttr(TransformComparator):
     return `self.attr`
 
 class CmpAttr(TransformComparator):
+  """ Compare item.some_attribute """
   def __init__(self, attr, value):
     self.attr = attr
     self.value = value
@@ -374,6 +447,7 @@ class CmpAttr(TransformComparator):
     return `self.attr`
 
 class Attr(Comparator):
+  """ Check that item.some_attr exists and compare it to some value """
   def __init__(self, attr, value):
     self.hasattr = HasAttr(attr)
     self.cmpattr = CmpAttr(attr, value)
@@ -383,6 +457,12 @@ class Attr(Comparator):
            comp.descend(item, self.cmpattr)
 
 class Attrs(ValueComparator):
+  """ Check that item has certain attributes and compare them to some
+  values. This can be created in several ways:
+  Attrs(attr1=value1, attr2=value)
+  Attrs([(attr1, value1), (attr2, value2)])
+  Attrs({attr1 : value1, attr2 : value2 })
+  """
   def __init__(self, *args, **qargs):
     if args:
       if qargs:
@@ -407,6 +487,7 @@ class Attrs(ValueComparator):
     return True
 
 class Call(TransformComparator):
+  """ Calls item(some, args) and compares the result to some value. """
   def __init__(self, value, args=[], kwargs={}):
     self.value = value
     self.args = args
@@ -428,6 +509,8 @@ class Call(TransformComparator):
     return "%s(%s)" % (expr, ", ".join(args))
 
 class AndA(Comparator):
+  """ Checks that all of an array of comparator successfully compare against
+  item """
   def __init__(self, conds):
     self.conds = conds
 
@@ -445,6 +528,8 @@ class AndA(Comparator):
     return "%s(%s)" % (self.__class__.__name__, `self.conds`)
 
 class And(AndA):
+  """ As AndA but instead of passing in an array, it the argument list
+  to the constructor is the array """
   def __init__(self, *conds):
     AndA.__init__(self, conds)
 
@@ -456,6 +541,7 @@ class Ignore(Comparator):
     return "Ignore"
 
 class Re(Comparator):
+  """ Check that item matches a regular expression (using re.search) """
   def __init__(self, regex, flags=0):
     if type(regex) is str:
       self.orig = "%s" % `regex`
@@ -479,6 +565,7 @@ class Re(Comparator):
     return "%s(%s)" % (self.__class__.__name__, self.orig)
 
 class Elements(Comparator):
+  """ Compare certain elements of item against a value """
   def __init__(self, value, indices=None):
     self.value = value
     self.indices = indices
