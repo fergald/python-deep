@@ -534,6 +534,7 @@ class And(AndA):
     AndA.__init__(self, conds)
 
 class Ignore(Comparator):
+  """ This comparator always succeeds """
   def equals(self, item, comp):
     return True
     
