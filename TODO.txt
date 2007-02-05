@@ -1,0 +1,11 @@
+* cache the wrapped objects
+
+* check if wrap() covers all the builtins
+
+* add Collection
+
+* add Bag
+
+* split items out of Dict
+
+* Object should use Type no InstanceOf
