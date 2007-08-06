@@ -1,0 +1,78 @@
+""" deep.py allows you to check that a complex piece of data
+corresponds to some expected structure - a bit like regular
+expressions except for data structures and objects instead of
+strings.
+
+At it's simplest this means checking that the one structure is
+identical to another. This is very similar to python's built-in ==
+operator, the difference being that deep.py will also check descend
+into objects, checking that all properties of the objects are equal
+too. The more complicated usage allows you to override the comparison
+process testing at any point. For example you can express ideas like
+"a list of strings where all of the strings have length 20 and match
+this regular expression".
+
+The entry-point for comparisons is deep.diff(i1, i2). You can think of
+i2 as the template which i1 must match. If they successfully match
+then the return value is None if they don't match then an object. This
+object knows at what point the comparison failed and what the expected
+and actual values were that caused the failure
+
+For example, if o1 and o2 are objects then
+
+deep.diff(o1, o2)
+
+will check that they are of the same class, that they have the same
+properties and that the values of those properties are also the
+same. Getting slightly more complicated, if l1 and l2 are lists of
+objects then
+
+deep.diff(l1, l2)
+
+will check that l1 and l2 have the number of elements and then it will
+check that each element in l1 successfully comapares to it's
+corresponding element in l2.
+
+So far this is quite similiar to == except that it digs around inside
+objects. Things get more interesting when you add special
+comparators. A special comparator lets you compare items in a
+different way. For example deep.Len(n) constructs a comparator that
+tests the length of an item. So
+
+deep.compare(l1, deep.Len(7))
+
+tests that l1 has 7 elements and
+
+deep.compare(l1, [deep.Len(7), deep.Len(10)])
+
+tests that l1 is a list of 2 elements, the first of length 7, the
+second of length 10.
+
+deep.compare(l1, deep.EqSet(["hello", "world", "!"]))
+
+tests that l1 is has 3 elements and they are the strings "hello",
+"world" and "!" but it doesn't care what order they occur in.
+
+deep.compare(l1, deep.EqSet([deep.Len(7), deep.Len(10)]))
+
+tests that l1 has 2 elements, 1 of length 7, one of length 10 but doesn't care in what order these elements appear.
+
+It is useful to imagine how you might do a comparison like this by
+hand. If you want to compare 2 data structures by hand, you could
+print them out and lay them beside each other. Then move through the
+trees on both sides looking for differences. This becomes much more
+powerful if one side is allowed to contain not just data but also
+instructions on what a the other side should look like at this point. So say we want the left hand side to be an array of strings matching a certain.
+but we're not sure 
+mixture of data and instructions on what is considered
+
+that you want to compare and lay doing this comparison by hand
+
+
+
+deep.compare() returns None if there are no differences between the 
+for each i in range(0, len(a1))
+ So say
+ompare structures and objects "deeply". This means that
+by default it will recurse into lists, hashes and objects as far as
+possible, checking that both sides are equal """
