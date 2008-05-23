@@ -93,7 +93,7 @@ class Comparison(object):
 
   def descend(self, i1, i2):
     """
-    Parameters:
+    Arguments:
       i1 : any item of data
       i2 : an item to compare with i1, this may be some plain data, an
         object derived from deep.Comparator or a mix of both.
