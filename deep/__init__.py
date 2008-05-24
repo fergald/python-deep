@@ -15,8 +15,6 @@
 # along with deep.py; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-__author__ = "Fergal Daly <fergal@esatclear.ie>"
-
 """Flexible comparison of nested python datastrucures and objects.
 
 Composable regular expressions for data structures.
@@ -101,6 +99,8 @@ len(x.wibble['things']):
   Expected: 3
   Actual  : 4  
 """
+
+__author__ = "Fergal Daly <fergal@esatclear.ie>"
 
 import re
 import sys
