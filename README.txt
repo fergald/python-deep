@@ -1,9 +1,6 @@
+Flexible comparison of nested python datastrucures and objects.
 
-__author__ = "Fergal Daly <fergal@esatclear.ie>"
-
-"""Flexible comparison of nested python datastrucures and objects.
-
-Composable regular expressions for data structures.
+Composable "regular expressions" for data structures.
 
 This module allows easy and flexible deep comparisons of
 datastructure. It's not well documented yet but it's a port to python
@@ -83,6 +80,4 @@ if diff:
 # Outputs
 len(x.wibble['things']):
   Expected: 3
-  Actual  : 4
-  
-"""
+  Actual  : 4  

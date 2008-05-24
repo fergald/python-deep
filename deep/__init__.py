@@ -1,4 +1,4 @@
-# Copyright 2006 Fergal Daly <fergal@esatclear.ie>
+# Copyright 2008 Fergal Daly <fergal@esatclear.ie>
 
 # This file is part of deep.py.
 #
@@ -17,7 +17,7 @@
 
 """Flexible comparison of nested python datastrucures and objects.
 
-Composable regular expressions for data structures.
+Composable "regular expressions" for data structures.
 
 This module allows easy and flexible deep comparisons of
 datastructure. It's not well documented yet but it's a port to python
