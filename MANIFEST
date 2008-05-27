@@ -2,6 +2,7 @@ deep/__init__.py
 deep/test.py
 deep_test.py
 setup.py
+write_readme.py
 LGPL.txt
 MANIFEST
 README.txt
