@@ -18,3 +18,5 @@ Most importantly it allows aribitrary nesting of the various
 comparisons and embedding of them inside other datastructures and
 objects. This makes it easy to perform comparisons that would
 otherwise have been tedious.
+
+Run examples.py and have a look around it for more info.

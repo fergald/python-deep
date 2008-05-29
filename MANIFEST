@@ -1,9 +1,10 @@
-deep/__init__.py
-deep/test.py
-deep_test.py
-setup.py
-test_test.py
+CHANGES.txt
 LGPL.txt
 MANIFEST
 README.txt
-CHANGES.txt
+deep/__init__.py
+deep/test.py
+deep_test.py
+examples.py
+setup.py
+test_test.py
