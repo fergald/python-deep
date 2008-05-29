@@ -36,7 +36,9 @@ __all__ = ['diff',
            'And',
            'Ignore',
            'Re',
-           'Elements',
+           'Slice',
+           'ArrayValues',
+           'DictValues',
            ]
 
 DEBUG = 0
@@ -393,7 +395,7 @@ class HasKeys(TransformComparator):
     return "%s.keys()" % expr
       
 class Dict(ValueComparator):
-  """ Compare items against a dict """
+  """ Check that item is a dict and compare it element by element """
   def equals(self, item, comp):
     v = self.value
 
@@ -509,7 +511,7 @@ class Call(TransformComparator):
     return "%s(%s)" % (expr, ", ".join(args))
 
 class AndA(Comparator):
-  """ Checks that all of an array of comparator successfully compare against
+  """ Checks that each of an array of comparators successfully compare against
   item """
   def __init__(self, conds):
     self.conds = conds
@@ -528,8 +530,8 @@ class AndA(Comparator):
     return "%s(%s)" % (self.__class__.__name__, `self.conds`)
 
 class And(AndA):
-  """ As AndA but instead of passing in an array, it the argument list
-  to the constructor is the array """
+  """ As AndA but instead of passing in an array object, the argument list
+  to the constructor is turned into an array object """
   def __init__(self, *conds):
     AndA.__init__(self, conds)
 
@@ -565,27 +567,35 @@ class Re(Comparator):
   def __repr__(self):
     return "%s(%s)" % (self.__class__.__name__, self.orig)
 
-class Elements(Comparator):
-  """ Compare certain elements of item against a value """
-  def __init__(self, value, indices=None):
+class Slice(Comparator):
+  """ Compare certain indexed elements of item against the value """
+  def __init__(self, value, indices):
     self.value = value
     self.indices = indices
-    
+
   def equals(self, item, comp):
     value = self.value
     indices = self.indices
-
-    if not indices:
-      indices = xrange(0, len(item))
 
     for i in indices:
       if not comp.descend(item, IndexedElem(i, value)):
         return False
 
     return True
-    
+
   def render(self):
     return self.render_value(self.value)
 
   def __repr__(self):
     return "%s(%s)" % (self.__class__.__name__, `self.value`)
+
+class ArrayValues(ValueComparator):
+  """ Compare each element of an array to the value """
+  def equals(self, item, comp):
+    return comp.descend(item, Slice(self.value, xrange(0, len(item))))
+                        
+class DictValues(ValueComparator):
+  """ Compare each value in a dictionary to the value """
+  def equals(self, item, comp):
+    return comp.descend(item, Slice(self.value, item.keys()))
+                        
