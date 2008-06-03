@@ -1,0 +1,15 @@
+0.5
+
+Lots of doc and style fixes, move to git instead ofhg and a messy
+merge from tarballs to cover lost hg repo.
+
+Added write_readme.py.
+
+0.4
+
+Minor adminstrative tweaks.
+
+0.3
+
+First proper release.
+
