@@ -424,7 +424,7 @@ class Listish(ValueComparator):
     return True
 
 class List(Listish):
-  """.Compare as a list, element by element."""
+  """Compare as a list, element by element."""
   mytype = list
 
 class Tuple(Listish):
