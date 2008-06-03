@@ -3,7 +3,7 @@ Flexible comparison of nested python datastrucures and objects.
 Composable "regular expressions" for data structures.
 
 This module allows easy and flexible deep comparisons of
-datastructures. It's not well documented yet but it's a port to python
+datastructure. It's not well documented yet but it's a port to python
 of Test::Deep which is well documented
 (http://search.cpan.org/~fdaly/Test-Deep/).
 
@@ -15,13 +15,12 @@ unittest.py .
 It allows easy comparison of objects - it just checks that
 they're in the same class and have the same __dict__.
 
-It allows set-wise comparison of lists or tuples (actually, that's on
-in the Perl version at the moment).
+It allows set-wise comparison of lists or tuples.
 
 Most importantly it allows aribitrary nesting of the various
 comparisons and embedding of them inside other datastructures and
-objects. This makes it easy to perform comparisons that would
-otherwise have been tedious.
+object. This makes it easy to perform comparisons that would otherwise
+have been tedious.
 
 It turns what would have involved lots of looping and iffing and
 comparing into just putting together a structure that looks like what
