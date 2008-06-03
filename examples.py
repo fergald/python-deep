@@ -1,3 +1,5 @@
+#! /usr/bin/python
+
 import deep
 
 examples = [("a failing regex", "feRgal", deep.Re("rga")),
