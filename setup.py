@@ -1,7 +1,7 @@
 from distutils.core import setup
 
 setup(name='deep',
-      version='0.4',
+      version='0.5',
       packages = ['deep'],
       author="Fergal Daly",
       author_email="fergal@esatclear.ie",
