@@ -1,4 +1,4 @@
-# Copyright 2006 Fergal Daly <fergal@esatclear.ie>
+# Copyright 2008 Fergal Daly <fergal@esatclear.ie>
 
 # This file is part of deep.py.
 #
