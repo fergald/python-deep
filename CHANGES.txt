@@ -1,3 +1,13 @@
+0.6
+
+Stop using import *.
+
+Make test_test.py executable.
+
+Add setup.py license entry.
+
+Update copyright notices.
+
 0.5
 
 Lots of doc and style fixes, move to git instead ofhg and a messy
