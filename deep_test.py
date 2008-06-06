@@ -17,10 +17,10 @@
 # along with deep.py; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
+import re
 import unittest
 
-from deep import *
-import re
+import deep as d
 
 E=True
 N=False
@@ -45,13 +45,13 @@ class TestEqual(object):
     self.name = name
 
   def test(self, case):
-    d = diff(self.i1, self.i2)
+    diff = d.diff(self.i1, self.i2)
     msg = "%s: %s vs %s should be equal" %(self.name, self.i1, self.i2)
 
-    if d:
-      msg += "\n" + d.render_full()
+    if diff:
+      msg += "\n" + diff.render_full()
 
-    case.failUnless(not d, msg)
+    case.failUnless(not diff, msg)
 
 class TestNotEqual(object):
   def __init__(self, i1, i2, path="", actual="", expected="", name=""):
@@ -63,7 +63,7 @@ class TestNotEqual(object):
     self.name = name
 
   def test(self, case):
-    c = diff(self.i1, self.i2)
+    c = d.diff(self.i1, self.i2)
     msg = "%s: %s vs %s should not be equal" %(self.name, self.i1, self.i2)
 
     if c:
@@ -86,94 +86,94 @@ class DeepTest(unittest.TestCase):
              N(1, 2, "x", "1", "2", "1 != 2"),
              E((1,2), (1,2), "tuple diff"),
              N((1,3), (1,2), "x[1]", "3", "2", "tuple diff"),
-             E(1, Is(1), "1 Is 1"),
-             N(2, Is(1), "x", self.str_id(2), self.str_id(1), "2 ! Is 1"),
-             E(1, Type(int), "1 Type int"),
-             N([], Type(int), "type(x)", self.str_id(list), self.str_id(int),
+             E(1, d.Is(1), "1 Is 1"),
+             N(2, d.Is(1), "x", self.str_id(2), self.str_id(1), "2 ! Is 1"),
+             E(1, d.Type(int), "1 Type int"),
+             N([], d.Type(int), "type(x)", self.str_id(list), self.str_id(int),
                "[] ! Type int"),
-             E(self, InstanceOf(unittest.TestCase), "self InstanceOf test"),
-             N([], InstanceOf(int), "x",
+             E(self, d.InstanceOf(unittest.TestCase), "self InstanceOf test"),
+             N([], d.InstanceOf(int), "x",
                "instance of <type 'list'>",
                "instance of <type 'int'>",
                "[] ! InstanceOf int"),
-             E([0,1], IndexedElem(1, 1), "List[1]"),
-             N([0,1], IndexedElem(0, 1), "x[0]", "0", "1", "List[0]"),
-             E([0,1], List([0, 1]), "list"),
-             N([0,1], List([0, 0]), "x[1]", "1", "0", "not list"),
+             E([0,1], d.IndexedElem(1, 1), "List[1]"),
+             N([0,1], d.IndexedElem(0, 1), "x[0]", "0", "1", "List[0]"),
+             E([0,1], d.List([0, 1]), "list"),
+             N([0,1], d.List([0, 0]), "x[1]", "1", "0", "not list"),
              E([0,1], [0, 1], "auto list"),
-             N([0,1], List([0, 0, 0]), "len(x)", "2", "3", "not list len"),
-             N(1, List([0, 0, 0]), "x", "instance of <type 'int'>", None, "not list type"),
-             E([1,0], EqSet([0, 1]), "eqset"),
-             N([0,1], EqSet([0, 2]), "x as a set (==)",
+             N([0,1], d.List([0, 0, 0]), "len(x)", "2", "3", "not list len"),
+             N(1, d.List([0, 0, 0]), "x", "instance of <type 'int'>", None, "not list type"),
+             E([1,0], d.EqSet([0, 1]), "eqset"),
+             N([0,1], d.EqSet([0, 2]), "x as a set (==)",
                "1 matching element(s), extra: [1], missing: [2]",
                "2 matching element(s)",
                "not eqset"),
-             E({"a" : 0, "b" : 1}, IndexedElem("b", 1), "Dict['a']"),
-             N({"a" : 0, "b" : 1}, IndexedElem("a", 1), "x['a']", "0", "1",
+             E({"a" : 0, "b" : 1}, d.IndexedElem("b", 1), "Dict['a']"),
+             N({"a" : 0, "b" : 1}, d.IndexedElem("a", 1), "x['a']", "0", "1",
                "Dict['b']"),
-             E({"a" : 0, "b" : 1}, HasKeys(["a", "b"]), "has keys"),
-             N({"a" : 0, "b" : 1}, HasKeys(["a", "c"]),
+             E({"a" : 0, "b" : 1}, d.HasKeys(["a", "b"]), "has keys"),
+             N({"a" : 0, "b" : 1}, d.HasKeys(["a", "c"]),
                'x.keys() as a set (==)',
                "1 matching element(s), extra: ['b'], missing: ['c']",
                '2 matching element(s)',
                "! haskeys"),
-             E({"a" : 0, "b" : 1}, Dict({"a" : 0, "b" : 1}), "Dict"),
-             N({"a" : 0, "b" : 1}, Dict({"a" : 1, "b" : 1}), "x['a']", "0", "1",
+             E({"a" : 0, "b" : 1}, d.Dict({"a" : 0, "b" : 1}), "Dict"),
+             N({"a" : 0, "b" : 1}, d.Dict({"a" : 1, "b" : 1}), "x['a']", "0", "1",
                "! Dict"),
-             N({"a" : 0, "c" : 1}, Dict({"a" : 1, "b" : 1}),
+             N({"a" : 0, "c" : 1}, d.Dict({"a" : 1, "b" : 1}),
               'x.keys() as a set (==)', None, None, "! Dict keys"),
-             N(1, Dict({"a" : 1, "b" : 1}),
+             N(1, d.Dict({"a" : 1, "b" : 1}),
                'x', "instance of <type 'int'>", None, "! Dict type"),
              E({"a" : 0, "b" : 1}, {"a" : 0, "b" : 1}, "auto Dict"),
-             E(o, HasAttr("an_attr"), "attr"),
-             N(o, HasAttr("another_attr"), "hasattr(x, 'another_attr')", "False", "True", "! attr"),
-             E(o, Attr("an_attr", 1), "attr"),
-             N(o, Attr("an_attr", 0), 'x.an_attr', "1", "0", "! attr"),
-             E(o, Attrs({"an_attr" : 1, "an_attr2" : 2}), "attrs dict"),
-             N(o, Attrs({"an_attr" : 0, "an_attr2" : 2}), 'x.an_attr', "1", "0",
+             E(o, d.HasAttr("an_attr"), "attr"),
+             N(o, d.HasAttr("another_attr"), "hasattr(x, 'another_attr')", "False", "True", "! attr"),
+             E(o, d.Attr("an_attr", 1), "attr"),
+             N(o, d.Attr("an_attr", 0), 'x.an_attr', "1", "0", "! attr"),
+             E(o, d.Attrs({"an_attr" : 1, "an_attr2" : 2}), "attrs dict"),
+             N(o, d.Attrs({"an_attr" : 0, "an_attr2" : 2}), 'x.an_attr', "1", "0",
                "! attrs dict "),
-             E(o, Attrs((("an_attr", 1), ("an_attr2", 2))), "attrs list"),
-             N(o, Attrs((("an_attr", 0), ("an_attr2", 2))), 'x.an_attr',
+             E(o, d.Attrs((("an_attr", 1), ("an_attr2", 2))), "attrs list"),
+             N(o, d.Attrs((("an_attr", 0), ("an_attr2", 2))), 'x.an_attr',
                "1", "0", "! attrs list "),
-             E(o, Attrs(an_attr=1, an_attr2=2), "attrs dict"),
-             N(o, Attrs(an_attr=0, an_attr2=2), 'x.an_attr', "1", "0",
+             E(o, d.Attrs(an_attr=1, an_attr2=2), "attrs dict"),
+             N(o, d.Attrs(an_attr=0, an_attr2=2), 'x.an_attr', "1", "0",
                "! attrs dict "),
-             N(o, Attr("no_attr", 0), "hasattr(x, 'no_attr')", "False", "True", "no attr"),
-             N((1,2), Attr("no_attr", 0), "hasattr(x, 'no_attr')", "False", "True", "tuple, no attr"),
-             E(o.a_func, Call(6, [3], {"c" : 2}), "call"),
-             N(o.a_func, Call(5, [3], {"c" : 2}), "x(3, c=2)", "6", "5",
+             N(o, d.Attr("no_attr", 0), "hasattr(x, 'no_attr')", "False", "True", "no attr"),
+             N((1,2), d.Attr("no_attr", 0), "hasattr(x, 'no_attr')", "False", "True", "tuple, no attr"),
+             E(o.a_func, d.Call(6, [3], {"c" : 2}), "call"),
+             N(o.a_func, d.Call(5, [3], {"c" : 2}), "x(3, c=2)", "6", "5",
                "! call"),
              E(o, o2, "object"),
              N(o, noto, "x.__dict__['an_attr2']", "2", "7", "! object"),
-             E(o, And(Attr("an_attr", 1), Attr("an_attr2", 2)), "and"),
-             N(o, And(Attr("an_attr", 0), Attr("an_attr2", 2)), 'x.an_attr', "1", "0", "! and 1"),
-             N(o, And(Attr("an_attr", 1), Attr("an_attr2", 3)), 'x.an_attr2', "2", "3", "! and 2"),
-             E([1, 2], [Ignore(), 2], "ignore"),
-             E("feRgal", Re("rga", re.IGNORECASE), "Re"),
-             N("feRgal", Re("rga", re.MULTILINE), "x", `"feRgal"`, "something matching 'rga' (flags=8)", "Re"),
-             E(["abc", "ab", "a"], ArrayValues(Re("a")), "ArrayValues"),
-             N(["abc", "ab", "a"], ArrayValues(Re("b")), "x[2]", "a".__repr__(), "something matching 'b'", "ArrayValues"),
+             E(o, d.And(d.Attr("an_attr", 1), d.Attr("an_attr2", 2)), "and"),
+             N(o, d.And(d.Attr("an_attr", 0), d.Attr("an_attr2", 2)), 'x.an_attr', "1", "0", "! and 1"),
+             N(o, d.And(d.Attr("an_attr", 1), d.Attr("an_attr2", 3)), 'x.an_attr2', "2", "3", "! and 2"),
+             E([1, 2], [d.Ignore(), 2], "ignore"),
+             E("feRgal", d.Re("rga", re.IGNORECASE), "Re"),
+             N("feRgal", d.Re("rga", re.MULTILINE), "x", `"feRgal"`, "something matching 'rga' (flags=8)", "Re"),
+             E(["abc", "ab", "a"], d.ArrayValues(d.Re("a")), "ArrayValues"),
+             N(["abc", "ab", "a"], d.ArrayValues(d.Re("b")), "x[2]", "a".__repr__(), "something matching 'b'", "ArrayValues"),
              E(["abc", "ab", "a"],
-               Slice(Re("b"), (0, 1)),
+               d.Slice(d.Re("b"), (0, 1)),
                "Slice array"),
              N(["a", "c", "abc"],
-               Slice(Re("b"), (1, 2)),
+               d.Slice(d.Re("b"), (1, 2)),
                "x[1]",
                "c".__repr__(),
                "something matching 'b'",
                "Slice array"),
              E({"x" : "abc", "y" : "ab", "z" : "a"},
-               DictValues(Re("a")),
+               d.DictValues(d.Re("a")),
                "DictValues dict"),
              N({"x" : "abc", "y" : "ab", "z" : "a"},
-               DictValues(Re("b")),
+               d.DictValues(d.Re("b")),
                "x['z']", "a".__repr__(), "something matching 'b'",
                "DictValues dict"),
              E({"x" : "abc", "y" : "ab", "z" : "a"},
-               Slice(Re("b"), ("x", "y")),
+               d.Slice(d.Re("b"), ("x", "y")),
                "Slice dict"),
              N({"x" : "abc", "y" : "c", "z" : "a"},
-               Slice(Re("b"), ("x", "y")),
+               d.Slice(d.Re("b"), ("x", "y")),
                "x['y']",
                "c".__repr__(),
                "something matching 'b'",
@@ -191,7 +191,7 @@ class DeepExc(unittest.TestCase):
   def runTest(self):
     ex = None
     try:
-      diff([0, 1], IndexedElem(2, None))
+      d.diff([0, 1], d.IndexedElem(2, None))
     except Exception, e:
       ex = e
 
