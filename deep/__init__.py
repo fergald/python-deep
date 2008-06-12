@@ -248,6 +248,8 @@ class Comparison(object):
       return Equal(item)
     elif t in (list, ):
       return List(item)
+    elif t in (set, ):
+      return Set(item)
     elif t in (tuple, ):
       return Tuple(item)
     elif t in (dict, ):
@@ -470,6 +472,12 @@ class EqSet(ValueComparator):
 
   def expr(self, expr):
     return "%s as a set (==)" % expr
+
+class Set(EqSet):
+  """Compare to builtin set item."""
+  def equals(self, item, comp):
+    return (comp.descend(item, InstanceOf(set)) and
+            EqSet.equals(self, item, comp))
 
 class HasKeys(TransformComparator):
   """Compare item.keys()."""
