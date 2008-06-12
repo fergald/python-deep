@@ -1,3 +1,7 @@
+0.7
+
+Add support for builtin set type.
+
 0.6
 
 Stop using import *.
