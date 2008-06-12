@@ -181,12 +181,12 @@ class DeepTest(unittest.TestCase):
              ]
 
     if hasattr(__builtins__, "set"):
-      tests.extend([E(set([1,0]), d.Set(set([0, 1])), "eqset"),
-                    N(set([0,1]), d.Set(set([0, 2])), "x as a set (==)",
+      tests.extend([E(set([1,0]), set([0, 1]), "eqset"),
+                    N(set([0,1]), set([0, 2]), "x as a set (==)",
                       "1 matching element(s), extra: [1], missing: [2]",
                       "2 matching element(s)",
                       "not eqset"),
-                    N([0,1], d.Set(set([0, 1])), "x as a set (==)",
+                    N([0,1], set([0, 1]), "x as a set (==)",
                       "instance of <type 'list'>",
                       "instance of <type 'set'>")
                    ])

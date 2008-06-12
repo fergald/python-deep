@@ -1,3 +1,8 @@
+0.8
+
+Fix set tests, they weren't testing that we correctly handle naked
+sets.
+
 0.7
 
 Add support for builtin set type.
