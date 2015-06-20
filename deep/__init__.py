@@ -250,6 +250,8 @@ class Comparison(object):
       return List(item)
     elif t in (set, ):
       return Set(item)
+    elif t in (frozenset, ):
+      return Frozenset(item)
     elif t in (tuple, ):
       return Tuple(item)
     elif t in (dict, ):
@@ -477,6 +479,12 @@ class Set(EqSet):
   """Compare to builtin set item."""
   def equals(self, item, comp):
     return (comp.descend(item, InstanceOf(set)) and
+            EqSet.equals(self, item, comp))
+
+class Frozenset(EqSet):
+  """Compare to builtin frozenset item."""
+  def equals(self, item, comp):
+    return (comp.descend(item, InstanceOf(frozenset)) and
             EqSet.equals(self, item, comp))
 
 class HasKeys(TransformComparator):

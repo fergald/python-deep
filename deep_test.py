@@ -191,6 +191,18 @@ class DeepTest(unittest.TestCase):
                       "instance of <type 'set'>")
                    ])
 
+    if hasattr(__builtins__, "frozenset"):
+      tests.extend([E(frozenset([1,0]), frozenset([0, 1]), "eqfrozenset"),
+                    N(frozenset([0,1]), frozenset([0, 2]),
+                      "x as a set (==)",
+                      "1 matching element(s), extra: [1], missing: [2]",
+                      "2 matching element(s)",
+                      "not eqfrozenset"),
+                    N([0,1], frozenset([0, 1]), "x as a set (==)",
+                      "instance of <type 'list'>",
+                      "instance of <type 'frozenset'>")
+                   ])
+
     # for t in (tests[-1],):
     for t in tests:
       t.test(self)
