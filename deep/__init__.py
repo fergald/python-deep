@@ -64,7 +64,7 @@ Actual  : instance of <type 'int'>
 ###
 # Test that we have a list of strings that all match a pattern.
 
-list_of_bings = deep.Elements(deep.Re("^bing "))
+list_of_bings = deep.ArrayValues(deep.Re("^bing "))
 diff = deep.diff(["bing bong", "bing crosby", "bin laden"], list_of_bings)
 if diff:
   diff.print_full()
