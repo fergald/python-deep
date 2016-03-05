@@ -300,7 +300,7 @@ class Comparison(object):
            (self.render_path(), self.render_expected(), self.render_actual())
 
   def print_full(self):
-    print self.render_full()
+    print(self.render_full())
 
 class DebugComparison(Comparison):
   """This class is useful if you are debugging a comparison and would like
@@ -310,7 +310,7 @@ class DebugComparison(Comparison):
     Comparison.__init__(self)
 
   def debug(self, msg):
-    print "%s%s" % ("  " * self.depth, msg)
+    print("%s%s" % ("  " * self.depth, msg))
 
   def descend(self, i1, i2):
     self.debug("descend(%s, %s)" % (i1, i2))
