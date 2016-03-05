@@ -1,4 +1,5 @@
 Flexible comparison of nested python datastrucures and objects.
+[![Build Status](https://travis-ci.org/fergald/python-deep.svg)](https://travis-ci.org/fergald/python-deep)
 
 Composable "regular expressions" for data structures.
 
