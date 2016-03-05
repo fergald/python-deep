@@ -227,13 +227,3 @@ class DeepExc(unittest.TestCase):
     for pat in (r"examining x\[2\]", "IndexError"):
       if not re.search(pat, str(ex)):
         self.fail("exception didn't match '%s':\n%s" % (pat, ex))
-
-
-if __name__ == '__main__':
-  suite = unittest.TestSuite()
-  suite.addTests([ DeepTest(),
-                   DeepExc(),
-                  ]
-                )
-  unittest.TextTestRunner(verbosity=3).run(suite)
-        
