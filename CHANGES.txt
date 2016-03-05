@@ -1,3 +1,11 @@
+0.10
+
+Doc fix.
+
+0.9
+
+Added support for frozenset.
+
 0.8
 
 Fix set tests, they weren't testing that we correctly handle naked
