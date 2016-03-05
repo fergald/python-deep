@@ -21,7 +21,7 @@ import deep.test
 
 class DeepTest(deep.test.TestCase):
   def testTest(self):
-    self.assertEquals(1, 1)
+    self.assertEqual(1, 1)
     self.DeepEq([1], [1], "wibble")
 
 if __name__ == '__main__':
