@@ -106,6 +106,10 @@ import re
 import sys
 import traceback
 
+from six import text_type as unicode
+from six.moves import range
+import six
+
 __all__ = ['diff',
            'Equal',
            'Is',
@@ -460,7 +464,7 @@ class EqSet(ValueComparator):
     if len(missing) or len(extra):
       self.matched = matched
       self.missing = missing
-      self.extra = extra.keys()
+      self.extra = list(six.iterkeys(extra))
       return False
     else:
       return True
@@ -493,7 +497,7 @@ class HasKeys(TransformComparator):
     self.value = EqSet(value)
 
   def transform(self, item):
-    return item.keys()
+    return list(six.iterkeys(item))
 
   def expr(self, expr):
     return "%s.keys()" % expr
@@ -503,7 +507,7 @@ class Dict(ValueComparator):
   def equals(self, item, comp):
     v = self.value
 
-    for c in (InstanceOf(dict), HasKeys(v.keys())):
+    for c in (InstanceOf(dict), HasKeys(list(six.iterkeys(v)))):
       if not comp.descend(item, c):
         return False
 
@@ -583,7 +587,7 @@ class Attrs(ValueComparator):
   def equals(self, item, comp):
     v = self.value
     if isinstance(v, dict):
-      items = v.items()
+      items = six.iteritems(v)
     else:
       items = v
     for (attr, c) in items:
@@ -608,7 +612,7 @@ class Call(TransformComparator):
     if args_s:
       args.append(args_s)
     kwargs_a = [("%s=%s" % (x[0], self.render_value(x[1])))
-                for x in self.kwargs.items()]
+                for x in six.iteritems(self.kwargs)]
     if kwargs_a:
       args.append(", ".join(kwargs_a))
 
@@ -701,10 +705,9 @@ class Slice(Comparator):
 class ArrayValues(ValueComparator):
   """ Compare each element of an array to the value """
   def equals(self, item, comp):
-    return comp.descend(item, Slice(self.value, xrange(0, len(item))))
+    return comp.descend(item, Slice(self.value, range(0, len(item))))
                         
 class DictValues(ValueComparator):
   """ Compare each value in a dictionary to the value """
   def equals(self, item, comp):
-    return comp.descend(item, Slice(self.value, item.keys()))
-                        
+    return comp.descend(item, Slice(self.value, list(six.iterkeys(item))))
