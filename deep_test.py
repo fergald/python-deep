@@ -51,7 +51,7 @@ class TestEqual(object):
     if diff:
       msg += "\n" + diff.render_full()
 
-    case.failUnless(not diff, msg)
+    case.assertTrue(not diff, msg)
 
 class TestNotEqual(object):
   def __init__(self, i1, i2, path="", actual="", expected="", name=""):
@@ -215,7 +215,7 @@ class DeepExc(unittest.TestCase):
     ex = None
     try:
       d.diff([0, 1], d.IndexedElem(2, None))
-    except Exception, e:
+    except Exception as e:
       ex = e
 
     for pat in (r"examining x\[2\]", "IndexError"):

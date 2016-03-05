@@ -215,7 +215,7 @@ class Comparison(object):
     # Comparators are not hashable so this will be just id()
     key = (id(i1), i2) 
     cache = self.cache
-    if cache.has_key(key):
+    if key in cache:
       equals = cache[key]
     else:
       cache[key] = True # assume true to match circular structures
