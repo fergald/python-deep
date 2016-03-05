@@ -150,7 +150,7 @@ class DeepTest(unittest.TestCase):
              N(o, d.And(d.Attr("an_attr", 1), d.Attr("an_attr2", 3)), 'x.an_attr2', "2", "3", "! and 2"),
              E([1, 2], [d.Ignore(), 2], "ignore"),
              E("feRgal", d.Re("rga", re.IGNORECASE), "Re"),
-             N("feRgal", d.Re("rga", re.MULTILINE), "x", `"feRgal"`, "something matching 'rga' (flags=8)", "Re"),
+             N("feRgal", d.Re("rga", re.MULTILINE), "x", repr("feRgal"), "something matching 'rga' (flags=8)", "Re"),
              E(["abc", "ab", "a"], d.ArrayValues(d.Re("a")), "ArrayValues"),
              N(["abc", "ab", "a"], d.ArrayValues(d.Re("b")), "x[2]", "a".__repr__(), "something matching 'b'", "ArrayValues"),
              E(["abc", "ab", "a"],

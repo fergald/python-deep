@@ -151,7 +151,7 @@ def diff(i1, i2, debug=Unspec):
 class Comparator(object):
   """Base class for all Comparator objects."""
   def render_value(self, value):
-    return `value`
+    return repr(value)
 
   def expr(self, expr):
     return expr
@@ -322,7 +322,7 @@ class DebugComparison(Comparison):
 
   def wrap(self, item):
     wrapped = super(DebugComparison, self).wrap(item)
-    self.debug("%s wrapped as %s" % (`item`, `wrapped`))
+    self.debug("%s wrapped as %s" % (repr(item), repr(wrapped)))
     return wrapped
 
 class ValueComparator(Comparator):
@@ -335,7 +335,7 @@ class ValueComparator(Comparator):
     return self.render_value(self.value)
 
   def __repr__(self):
-    return "%s(%s)" % (self.__class__.__name__, `self.value`)
+    return "%s(%s)" % (self.__class__.__name__, repr(self.value))
 
 class TransformComparator(ValueComparator):
   """A base class for comparators that transform their inout and then
@@ -352,7 +352,7 @@ class TransformComparator(ValueComparator):
     return ""
 
   def __repr__(self):
-    return "%s(%s)==%s" %(self.__class__.__name__, self.trans_args(), `self.value`)
+    return "%s(%s)==%s" %(self.__class__.__name__, self.trans_args(), repr(self.value))
 
 class Equal(ValueComparator):
   """Compares using python's == ."""
@@ -402,7 +402,7 @@ class IndexedElem(TransformComparator):
     return "%s[%s]" % (expr, self.render_value(self.index))
 
   def trans_args(self):
-    return "%s" % `self.index`
+    return "%s" % repr(self.index)
 
 class Len(TransformComparator):
   """Compares against len(item)."""
@@ -532,10 +532,10 @@ class HasAttr(TransformComparator):
     return hasattr(item, self.attr)
 
   def expr(self, expr):
-    return "hasattr(%s, %s)" % (expr, `self.attr`)
+    return "hasattr(%s, %s)" % (expr, repr(self.attr))
 
   def trans_args(self):
-    return `self.attr`
+    return repr(self.attr)
 
 class CmpAttr(TransformComparator):
   """Compare item.some_attribute."""
@@ -550,7 +550,7 @@ class CmpAttr(TransformComparator):
     return "%s.%s" % (expr, self.attr)
 
   def trans_args(self):
-    return `self.attr`
+    return repr(self.attr)
 
 class Attr(Comparator):
   """Check that item.some_attr exists and compare it to some value."""
@@ -631,7 +631,7 @@ class AndA(Comparator):
     return self.render_value(self.value)
 
   def __repr__(self):
-    return "%s(%s)" % (self.__class__.__name__, `self.conds`)
+    return "%s(%s)" % (self.__class__.__name__, repr(self.conds))
 
 class And(AndA):
   """As AndA but instead of passing in an array object, the argument list
@@ -651,12 +651,12 @@ class Re(Comparator):
   """Check that item matches a regular expression (using re.search)."""
   def __init__(self, regex, flags=0):
     if type(regex) is str:
-      self.orig = "%s" % `regex`
+      self.orig = "%s" % repr(regex)
       if flags:
         self.orig += " (flags=%d)" % flags
       regex = re.compile(regex, flags)
     else:
-      self.orig = `regex`
+      self.orig = repr(regex)
     self.regex = regex
 
   def equals(self, item, comp):
@@ -696,7 +696,7 @@ class Slice(Comparator):
     return self.render_value(self.value)
 
   def __repr__(self):
-    return "%s(%s)" % (self.__class__.__name__, `self.value`)
+    return "%s(%s)" % (self.__class__.__name__, repr(self.value))
 
 class ArrayValues(ValueComparator):
   """ Compare each element of an array to the value """
