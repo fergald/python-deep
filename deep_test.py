@@ -1,5 +1,3 @@
-from builtins import str
-from builtins import object
 #! /usr/bin/python
 
 # Copyright 2008 Fergal Daly <fergal@esatclear.ie>
@@ -19,6 +17,8 @@ from builtins import object
 # along with deep.py; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
+from builtins import str
+from builtins import object
 import re
 import unittest
 
@@ -223,7 +223,7 @@ class DeepExc(unittest.TestCase):
     ex = None
     try:
       d.diff([0, 1], d.IndexedElem(2, None))
-    except Exception, e:
+    except Exception as e:
       ex = e
 
     for pat in (r"examining x\[2\]", "IndexError"):

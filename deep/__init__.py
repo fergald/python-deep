@@ -99,6 +99,10 @@ len(x.wibble['things']):
   Expected: 3
   Actual  : 4  
 """
+from __future__ import print_function
+from builtins import map
+from builtins import range
+from builtins import object
 
 __author__ = "Fergal Daly <fergal@esatclear.ie>"
 
@@ -132,11 +136,11 @@ __all__ = ['diff',
 
 DEBUG = 0
 
-class Unspec: pass
+class Unspec(object): pass
 
 # Python3 does not have the unicode type.
 EQUAL_TYPES = (str, int, bool, float) + (
-  () if sys.version_info[0] == 3 else (unicode,))
+  () if sys.version_info[0] == 3 else (str,))
 
 
 def diff(i1, i2, debug=Unspec):
@@ -156,7 +160,7 @@ def diff(i1, i2, debug=Unspec):
 class Comparator(object):
   """Base class for all Comparator objects."""
   def render_value(self, value):
-    return `value`
+    return repr(value)
 
   def expr(self, expr):
     return expr
@@ -220,7 +224,7 @@ class Comparison(object):
     # Comparators are not hashable so this will be just id()
     key = (id(i1), i2) 
     cache = self.cache
-    if cache.has_key(key):
+    if key in cache:
       equals = cache[key]
     else:
       cache[key] = True # assume true to match circular structures
@@ -305,7 +309,7 @@ class Comparison(object):
            (self.render_path(), self.render_expected(), self.render_actual())
 
   def print_full(self):
-    print self.render_full()
+    print(self.render_full())
 
 class DebugComparison(Comparison):
   """This class is useful if you are debugging a comparison and would like
@@ -315,7 +319,7 @@ class DebugComparison(Comparison):
     Comparison.__init__(self)
 
   def debug(self, msg):
-    print "%s%s" % ("  " * self.depth, msg)
+    print("%s%s" % ("  " * self.depth, msg))
 
   def descend(self, i1, i2):
     self.debug("descend(%s, %s)" % (i1, i2))
@@ -327,7 +331,7 @@ class DebugComparison(Comparison):
 
   def wrap(self, item):
     wrapped = super(DebugComparison, self).wrap(item)
-    self.debug("%s wrapped as %s" % (`item`, `wrapped`))
+    self.debug("%s wrapped as %s" % (repr(item), repr(wrapped)))
     return wrapped
 
 class ValueComparator(Comparator):
@@ -340,7 +344,7 @@ class ValueComparator(Comparator):
     return self.render_value(self.value)
 
   def __repr__(self):
-    return "%s(%s)" % (self.__class__.__name__, `self.value`)
+    return "%s(%s)" % (self.__class__.__name__, repr(self.value))
 
 class TransformComparator(ValueComparator):
   """A base class for comparators that transform their inout and then
@@ -357,7 +361,7 @@ class TransformComparator(ValueComparator):
     return ""
 
   def __repr__(self):
-    return "%s(%s)==%s" %(self.__class__.__name__, self.trans_args(), `self.value`)
+    return "%s(%s)==%s" %(self.__class__.__name__, self.trans_args(), repr(self.value))
 
 class Equal(ValueComparator):
   """Compares using python's == ."""
@@ -407,7 +411,7 @@ class IndexedElem(TransformComparator):
     return "%s[%s]" % (expr, self.render_value(self.index))
 
   def trans_args(self):
-    return "%s" % `self.index`
+    return "%s" % repr(self.index)
 
 class Len(TransformComparator):
   """Compares against len(item)."""
@@ -465,7 +469,7 @@ class EqSet(ValueComparator):
     if len(missing) or len(extra):
       self.matched = matched
       self.missing = missing
-      self.extra = extra.keys()
+      self.extra = list(extra.keys())
       return False
     else:
       return True
@@ -498,7 +502,7 @@ class HasKeys(TransformComparator):
     self.value = EqSet(value)
 
   def transform(self, item):
-    return item.keys()
+    return list(item.keys())
 
   def expr(self, expr):
     return "%s.keys()" % expr
@@ -508,7 +512,7 @@ class Dict(ValueComparator):
   def equals(self, item, comp):
     v = self.value
 
-    for c in (InstanceOf(dict), HasKeys(v.keys())):
+    for c in (InstanceOf(dict), HasKeys(list(v.keys()))):
       if not comp.descend(item, c):
         return False
 
@@ -537,10 +541,10 @@ class HasAttr(TransformComparator):
     return hasattr(item, self.attr)
 
   def expr(self, expr):
-    return "hasattr(%s, %s)" % (expr, `self.attr`)
+    return "hasattr(%s, %s)" % (expr, repr(self.attr))
 
   def trans_args(self):
-    return `self.attr`
+    return repr(self.attr)
 
 class CmpAttr(TransformComparator):
   """Compare item.some_attribute."""
@@ -555,7 +559,7 @@ class CmpAttr(TransformComparator):
     return "%s.%s" % (expr, self.attr)
 
   def trans_args(self):
-    return `self.attr`
+    return repr(self.attr)
 
 class Attr(Comparator):
   """Check that item.some_attr exists and compare it to some value."""
@@ -588,7 +592,7 @@ class Attrs(ValueComparator):
   def equals(self, item, comp):
     v = self.value
     if isinstance(v, dict):
-      items = v.items()
+      items = list(v.items())
     else:
       items = v
     for (attr, c) in items:
@@ -613,7 +617,7 @@ class Call(TransformComparator):
     if args_s:
       args.append(args_s)
     kwargs_a = [("%s=%s" % (x[0], self.render_value(x[1])))
-                for x in self.kwargs.items()]
+                for x in list(self.kwargs.items())]
     if kwargs_a:
       args.append(", ".join(kwargs_a))
 
@@ -636,7 +640,7 @@ class AndA(Comparator):
     return self.render_value(self.value)
 
   def __repr__(self):
-    return "%s(%s)" % (self.__class__.__name__, `self.conds`)
+    return "%s(%s)" % (self.__class__.__name__, repr(self.conds))
 
 class And(AndA):
   """As AndA but instead of passing in an array object, the argument list
@@ -656,12 +660,12 @@ class Re(Comparator):
   """Check that item matches a regular expression (using re.search)."""
   def __init__(self, regex, flags=0):
     if type(regex) is str:
-      self.orig = "%s" % `regex`
+      self.orig = "%s" % repr(regex)
       if flags:
         self.orig += " (flags=%d)" % flags
       regex = re.compile(regex, flags)
     else:
-      self.orig = `regex`
+      self.orig = repr(regex)
     self.regex = regex
 
   def equals(self, item, comp):
@@ -701,15 +705,15 @@ class Slice(Comparator):
     return self.render_value(self.value)
 
   def __repr__(self):
-    return "%s(%s)" % (self.__class__.__name__, `self.value`)
+    return "%s(%s)" % (self.__class__.__name__, repr(self.value))
 
 class ArrayValues(ValueComparator):
   """ Compare each element of an array to the value """
   def equals(self, item, comp):
-    return comp.descend(item, Slice(self.value, xrange(0, len(item))))
+    return comp.descend(item, Slice(self.value, range(0, len(item))))
                         
 class DictValues(ValueComparator):
   """ Compare each value in a dictionary to the value """
   def equals(self, item, comp):
-    return comp.descend(item, Slice(self.value, item.keys()))
+    return comp.descend(item, Slice(self.value, list(item.keys())))
                         
