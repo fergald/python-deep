@@ -134,6 +134,11 @@ DEBUG = 0
 
 class Unspec: pass
 
+# Python3 does not have the unicode type.
+EQUAL_TYPES = (str, int, bool, float) + (
+  () if sys.version_info[0] == 3 else (unicode,))
+
+
 def diff(i1, i2, debug=Unspec):
   if debug is Unspec:
     debug = DEBUG
@@ -244,7 +249,7 @@ class Comparison(object):
 
     # do I cover all the builtin types here?
     # missing Class
-    if t in (str, int, bool, float, unicode):
+    if t in EQUAL_TYPES:
       return Equal(item)
     elif t in (list, ):
       return List(item)
