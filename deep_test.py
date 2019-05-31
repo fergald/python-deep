@@ -1,3 +1,5 @@
+from builtins import str
+from builtins import object
 #! /usr/bin/python
 
 # Copyright 2008 Fergal Daly <fergal@esatclear.ie>
@@ -80,6 +82,11 @@ class TestNotEqual(object):
 E = TestEqual
 N = TestNotEqual
 
+def InstanceOf(i):
+  """Constructs a string which differs from python 2 to 3."""
+  return "instance of " + str(type(i))
+
+
 class DeepTest(unittest.TestCase):
   def runTest(self):
     tests = [E(1, 1, "1 == 1"),
@@ -93,8 +100,8 @@ class DeepTest(unittest.TestCase):
                "[] ! Type int"),
              E(self, d.InstanceOf(unittest.TestCase), "self InstanceOf test"),
              N([], d.InstanceOf(int), "x",
-               "instance of <type 'list'>",
-               "instance of <type 'int'>",
+               InstanceOf([]),
+               InstanceOf(0),
                "[] ! InstanceOf int"),
              E([0,1], d.IndexedElem(1, 1), "List[1]"),
              N([0,1], d.IndexedElem(0, 1), "x[0]", "0", "1", "List[0]"),
@@ -102,7 +109,7 @@ class DeepTest(unittest.TestCase):
              N([0,1], d.List([0, 0]), "x[1]", "1", "0", "not list"),
              E([0,1], [0, 1], "auto list"),
              N([0,1], d.List([0, 0, 0]), "len(x)", "2", "3", "not list len"),
-             N(1, d.List([0, 0, 0]), "x", "instance of <type 'int'>", None, "not list type"),
+             N(1, d.List([0, 0, 0]), "x", InstanceOf(0), None, "not list type"),
              E([1,0], d.EqSet([0, 1]), "eqset"),
              N([0,1], d.EqSet([0, 2]), "x as a set (==)",
                "1 matching element(s), extra: [1], missing: [2]",
@@ -123,7 +130,8 @@ class DeepTest(unittest.TestCase):
              N({"a" : 0, "c" : 1}, d.Dict({"a" : 1, "b" : 1}),
               'x.keys() as a set (==)', None, None, "! Dict keys"),
              N(1, d.Dict({"a" : 1, "b" : 1}),
-               'x', "instance of <type 'int'>", None, "! Dict type"),
+               'x',
+               InstanceOf(0), None, "! Dict type"),
              E({"a" : 0, "b" : 1}, {"a" : 0, "b" : 1}, "auto Dict"),
              E(o, d.HasAttr("an_attr"), "attr"),
              N(o, d.HasAttr("another_attr"), "hasattr(x, 'another_attr')", "False", "True", "! attr"),
@@ -150,7 +158,7 @@ class DeepTest(unittest.TestCase):
              N(o, d.And(d.Attr("an_attr", 1), d.Attr("an_attr2", 3)), 'x.an_attr2', "2", "3", "! and 2"),
              E([1, 2], [d.Ignore(), 2], "ignore"),
              E("feRgal", d.Re("rga", re.IGNORECASE), "Re"),
-             N("feRgal", d.Re("rga", re.MULTILINE), "x", `"feRgal"`, "something matching 'rga' (flags=8)", "Re"),
+             N("feRgal", d.Re("rga", re.MULTILINE), "x", repr("feRgal"), "something matching 'rga' (flags=8)", "Re"),
              E(["abc", "ab", "a"], d.ArrayValues(d.Re("a")), "ArrayValues"),
              N(["abc", "ab", "a"], d.ArrayValues(d.Re("b")), "x[2]", "a".__repr__(), "something matching 'b'", "ArrayValues"),
              E(["abc", "ab", "a"],
@@ -187,8 +195,8 @@ class DeepTest(unittest.TestCase):
                       "2 matching element(s)",
                       "not eqset"),
                     N([0,1], set([0, 1]), "x as a set (==)",
-                      "instance of <type 'list'>",
-                      "instance of <type 'set'>")
+                      InstanceOf([]),
+                      InstanceOf(set()))
                    ])
 
     if hasattr(__builtins__, "frozenset"):
@@ -199,14 +207,14 @@ class DeepTest(unittest.TestCase):
                       "2 matching element(s)",
                       "not eqfrozenset"),
                     N([0,1], frozenset([0, 1]), "x as a set (==)",
-                      "instance of <type 'list'>",
-                      "instance of <type 'frozenset'>")
+                      InstanceOf([]),
+                      InstanceOf(frozenset()))
                    ])
 
     # for t in (tests[-1],):
     for t in tests:
       t.test(self)
-      
+
   def str_id(self, item):
     return "%s (id = %i)" % (item, id(item))
 
@@ -230,4 +238,3 @@ if __name__ == '__main__':
                   ]
                 )
   unittest.TextTestRunner(verbosity=3).run(suite)
-        
